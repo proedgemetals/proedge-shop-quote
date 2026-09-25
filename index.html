@@ -3,7 +3,7 @@
 <style>
 *{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#f3f5f7;color:#17202a}header{background:#0b1f3a;color:#fff;padding:18px max(18px,env(safe-area-inset-left));position:sticky;top:0;z-index:2}header b{font-size:20px}header small{opacity:.9}main{max-width:760px;margin:auto;padding:14px}.card{background:#fff;padding:16px;border-radius:18px;margin-bottom:14px;box-shadow:0 1px 2px #0000000c}h2{margin:0 0 14px;font-size:26px}h3{margin:18px 0 8px;font-size:17px}label{font-size:12px;font-weight:750;display:block}input,select{width:100%;font-size:16px;padding:11px;margin:5px 0 10px;border:1px solid #c9d2dc;border-radius:10px;background:#fff}button{padding:11px 14px;border:0;border-radius:10px;background:#0b1f3a;color:#fff;font-weight:750;margin:3px 3px 3px 0;font-size:14px}.secondary{background:#e9eef4;color:#0b1f3a}.danger{background:#8b2635}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;align-items:end}.metric{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid #eee}.metric b{text-align:right}.note{font-size:12px;color:#667;line-height:1.4}.profileWrap{height:320px;border:1px solid #ccd4dd;border-radius:12px;background:#fafbfc;overflow:hidden}svg{width:100%;height:100%;touch-action:none}.seg{stroke:#0b1f3a;stroke-width:5;stroke-linecap:round}.seg.selected{stroke:#b3262e;stroke-width:7}.dim{font-size:15px;font-weight:800;fill:#17202a;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}.node{fill:#fff;stroke:#0b1f3a;stroke-width:3}.presetRow{display:flex;gap:6px;overflow:auto;padding-bottom:7px}.presetRow button{white-space:nowrap}.legrow{padding:10px 0;border-bottom:1px solid #eee}.legtitle{font-weight:800;margin-bottom:6px}.pill{display:inline-block;background:#eef2f6;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:700;margin:2px}.warn{background:#fff5d6;border:1px solid #ead486;border-radius:10px;padding:10px;font-size:12px;margin-top:10px}.total{font-size:19px}.toolbar{display:flex;flex-wrap:wrap;gap:4px}@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.three{grid-template-columns:1fr 1fr auto}.card{padding:14px}.profileWrap{height:300px}}
 </style></head>
-<body><header><b>PROEDGE METALS</b><br><small>Profile Designer + Shop Quote v3.2</small></header><main>
+<body><header><b>PROEDGE METALS</b><br><small>Profile Designer + Shop Quote v3.3</small></header><main>
 <div class="card"><h2>Profile Designer</h2>
 <label>Profile name</label><input id="name" value="Gravel Guard">
 <div class="presetRow"><button onclick="preset('gravel')">Gravel Guard</button><button onclick="preset('drip')">Drip Edge</button><button onclick="preset('coping')">Coping</button><button onclick="preset('counter')">Counterflashing</button><button onclick="preset('gutter')">Box Gutter</button></div>
@@ -34,7 +34,7 @@ const presets={
  drip:{name:"Drip Edge",legs:[{l:3,a:-90},{l:2,a:135},{l:.5,a:135},{l:.5,a:180}]},
  coping:{name:"Coping",legs:[{l:3,a:-90},{l:12,a:-90},{l:3,a:-90},{l:.5,a:180}]},
  counter:{name:"Counterflashing",legs:[{l:1,a:-90},{l:6,a:135},{l:.5,a:180}]},
- gutter:{name:"8 in Box Gutter",legs:[{l:4,a:-90},{l:8,a:90},{l:6,a:90},{l:8,a:90},{l:1,a:180}]}
+ gutter:{name:"Box Gutter",legs:[{l:4,a:-90},{l:8,a:90},{l:8,a:90},{l:5,a:-90},{l:2,a:-90},{l:.5,a:180}]}
 };
 function preset(k){let p=presets[k];$("name").value=p.name;legs=p.legs.map(v=>({...v}));selected=0;render()}
 function points(){
