@@ -2,18 +2,37 @@
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1f3a"><link rel="manifest" href="manifest.json"><title>ProEdge Profile Designer</title>
 <style>
 *{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#f3f5f7;color:#17202a}header{background:#0b1f3a;color:#fff;padding:18px max(18px,env(safe-area-inset-left));position:sticky;top:0;z-index:2}header b{font-size:20px}header small{opacity:.9}main{max-width:760px;margin:auto;padding:14px}.card{background:#fff;padding:16px;border-radius:18px;margin-bottom:14px;box-shadow:0 1px 2px #0000000c}h2{margin:0 0 14px;font-size:26px}h3{margin:18px 0 8px;font-size:17px}label{font-size:12px;font-weight:750;display:block}input,select{width:100%;font-size:16px;padding:11px;margin:5px 0 10px;border:1px solid #c9d2dc;border-radius:10px;background:#fff}button{padding:11px 14px;border:0;border-radius:10px;background:#0b1f3a;color:#fff;font-weight:750;margin:3px 3px 3px 0;font-size:14px}.secondary{background:#e9eef4;color:#0b1f3a}.danger{background:#8b2635}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;align-items:end}.metric{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid #eee}.metric b{text-align:right}.note{font-size:12px;color:#667;line-height:1.4}.profileWrap{height:360px;border:1px solid #ccd4dd;border-radius:12px;background:#fafbfc;overflow:hidden}svg{width:100%;height:100%;touch-action:none}.seg{stroke:#18242f;stroke-width:4;stroke-linecap:round}.seg.selected{stroke:#2f9b57;stroke-width:6}.dim{font-size:14px;font-weight:800;fill:#17202a;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}.node{fill:#fff;stroke:#0b1f3a;stroke-width:3}.touchNode{fill:transparent;stroke:none;cursor:grab;touch-action:none}.touchNode.active{fill:#0b1f3a;fill-opacity:.08}.bendLabel{font-size:13px;font-weight:800;fill:#667;paint-order:stroke;stroke:#fff;stroke-width:4px}.hemTag{font-size:12px;font-weight:850;fill:#8b2635;paint-order:stroke;stroke:#fff;stroke-width:4px}.presetRow{display:flex;gap:6px;overflow:auto;padding-bottom:7px}.presetRow button{white-space:nowrap}.legrow{padding:10px 0;border-bottom:1px solid #eee}.legtitle{font-weight:800;margin-bottom:6px}.pill{display:inline-block;background:#eef2f6;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:700;margin:2px}.warn{background:#fff5d6;border:1px solid #ead486;border-radius:10px;padding:10px;font-size:12px;margin-top:10px}.total{font-size:19px}.toolbar{display:flex;flex-wrap:wrap;gap:4px}@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.three{grid-template-columns:1fr 1fr auto}.card{padding:14px}.profileWrap{height:300px}}
+
+.prodbar{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.prodbar button{margin:0}.shopFields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.seq{font-size:12px;font-weight:900;fill:#fff}.seqCircle{fill:#0b1f3a;stroke:#fff;stroke-width:2}.finishArrow{font-size:12px;font-weight:900;fill:#2f9b57}.libraryItem{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #eee}.libraryItem button{padding:7px 9px}.badge{display:inline-block;padding:4px 7px;border-radius:99px;background:#e9eef4;font-size:11px;font-weight:800}@media(max-width:430px){.shopFields{grid-template-columns:1fr}.prodbar{grid-template-columns:1fr 1fr}}
 </style></head>
-<body><header><b>PROEDGE METALS</b><br><small>Profile Designer + Shop Quote v7.0</small></header><main>
+<body><header><b>PROEDGE METALS</b><br><small>Profile Designer + Shop Quote v8.0</small></header><main>
 <div class="card"><h2>Profile Designer</h2>
 <label>Profile name</label><input id="name" value="Gravel Guard">
 <div class="presetRow"><button onclick="preset('gravel')">Gravel Guard</button><button onclick="preset('drip')">Drip Edge</button><button onclick="preset('coping')">Coping</button><button onclick="preset('counter')">Counterflashing</button><button onclick="preset('gutter')">Box Gutter</button></div>
-<div class="profileWrap"><svg id="profile" viewBox="0 0 700 360"></svg></div><div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px"><label style="display:flex;align-items:center;gap:8px;font-size:14px"><input id="gridToggle" type="checkbox" style="width:auto;margin:0"> Show 1-inch grid</label><label style="display:flex;align-items:center;gap:8px;font-size:14px"><input id="halfGridToggle" type="checkbox" style="width:auto;margin:0"> Add 1/2-inch lines</label></div><p id="sketchHelp" class="note" style="display:none"><b>Sketch mode:</b> tap to add points. Tap to add each corner. Press and drag any point to reshape it. For a hem, draw the return back alongside the previous leg—even very close to it. The larger invisible touch targets make tight hems easier to shape. Exact size comes from the dimension you enter after finishing. Tap Finish Sketch when done.</p>
-<div class="toolbar"><button onclick="newSketch()">New / Clear Profile</button><button id="finishBtn" style="display:none" onclick="finishSketch()">Finish Sketch</button><button id="undoBtn" class="secondary" style="display:none" onclick="undoSketch()">Undo Point</button><button onclick="addLeg()">+ Add Leg</button><button class="secondary" onclick="window.rotateProfile(-15)">↺ 15°</button><button class="secondary" onclick="window.rotateProfile(15)">↻ 15°</button><button class="secondary" onclick="window.resetRotation()">Reset Rotation</button><button class="secondary" onclick="reverseProfile()">Reverse</button><button class="secondary" onclick="saveP()">Save on iPhone</button></div>
+<div class="shopFields">
+<div><label>Material</label><select id="material"><option>Galvanized Steel</option><option>Painted Steel</option><option>Aluminum</option><option>Stainless Steel</option><option>Copper</option></select></div>
+<div><label>Gauge / thickness (in)</label><input id="thickness" inputmode="decimal" type="number" step=".001" value=".024"></div>
+<div><label>Color / finish</label><input id="colorFinish" value=""></div>
+<div><label>Piece length (ft)</label><input id="profilePieceLen" inputmode="decimal" type="number" step=".5" value="10"></div>
+<div><label>Quantity</label><input id="profileQty" inputmode="numeric" type="number" min="1" value="1"></div>
+<div><label>Inside radius (in)</label><input id="insideRadius" inputmode="decimal" type="number" step=".001" value=".031"></div>
+</div>
+<div class="profileWrap"><svg id="profile" viewBox="0 0 700 360"></svg></div><div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;align-items:end">
+<label style="display:flex;align-items:center;gap:8px;font-size:14px"><input id="gridToggle" type="checkbox" style="width:auto;margin:0"> 1" grid</label>
+<label style="display:flex;align-items:center;gap:8px;font-size:14px"><input id="halfGridToggle" type="checkbox" style="width:auto;margin:0"> 1/2" lines</label>
+<div><label>Snap</label><select id="snapSelect" style="width:auto;margin:3px 0"><option value="0">Off</option><option value="1">1"</option><option value=".5">1/2"</option><option value=".25" selected>1/4"</option><option value=".125">1/8"</option><option value=".0625">1/16"</option></select></div>
+<button class="secondary" onclick="flipFinish()">Flip Finish Side</button>
+</div><p id="sketchHelp" class="note" style="display:none"><b>Sketch mode:</b> tap to add points. Tap to add each corner. Press and drag any point to reshape it. For a hem, draw the return back alongside the previous leg—even very close to it. The larger invisible touch targets make tight hems easier to shape. Exact size comes from the dimension you enter after finishing. Tap Finish Sketch when done.</p>
+<div class="toolbar"><button onclick="newSketch()">New / Clear Profile</button><button id="finishBtn" style="display:none" onclick="finishSketch()">Finish Sketch</button><button id="undoBtn" class="secondary" style="display:none" onclick="undoSketch()">Undo Point</button><button onclick="addLeg()">+ Add Leg</button><button class="secondary" onclick="window.rotateProfile(-15)">↺ 15°</button><button class="secondary" onclick="window.rotateProfile(15)">↻ 15°</button><button class="secondary" onclick="window.resetRotation()">Reset Rotation</button><button class="secondary" onclick="reverseProfile()">Reverse</button><button class="secondary" onclick="saveP()">Save on iPhone</button></div><div class="prodbar"><button onclick="saveToLibrary()">Save to Profile Library</button><button onclick="printWorkOrder()">Production Sheet</button></div>
 <p class="note"><b>Shop-sketch workflow:</b> sketch the shape first, then enter exact leg dimensions. Tap a leg to edit it. Bend labels are shown directly on the profile, and tight returns are identified as hems.</p>
 <div id="editPanel" class="warn" style="display:none"></div><div id="legs"></div>
 <div class="metric"><span>Nominal developed width</span><b id="flat"></b></div>
 <div><span class="pill" id="pieceCount"></span><span class="pill" id="bendCount"></span></div>
-<div class="warn">Nominal flat width currently adds the leg dimensions. Exact bend allowance/deduction depends on metal thickness, inside radius and brake/tooling setup; do not treat this as a production cut size until those rules are entered.</div>
+<div class="metric"><span>Calculated flat blank</span><b id="trueFlat">—</b></div>
+<div class="metric"><span>Total production footage</span><b id="prodFeet">—</b></div>
+<div class="grid"><div><label>K-factor</label><input id="kFactor" inputmode="decimal" type="number" min="0" max="1" step=".01" value=".40"></div><div><label>Bend deduction calibration (in/bend)</label><input id="bdAdjust" inputmode="decimal" type="number" step=".001" value="0"></div></div>
+<div class="warn"><b>Brake calibration required:</b> flat-blank math uses thickness, inside radius, bend angle and K-factor. Verify test bends on the actual brake/material before using calculated blanks for production. The calibration field lets ProEdge tune the result to the MAX-F setup.</div>
+<h3>Profile Library</h3><div id="profileLibrary" class="note">No saved shop profiles yet.</div>
 </div>
 
 <div class="card"><h2>Shop Quote</h2><div class="grid">
@@ -28,7 +47,7 @@
 </div></main>
 <script>
 const $=id=>document.getElementById(id);
-let legs=[{l:4,a:-90},{l:.5,a:-90},{l:.5,a:180}],selected=0,sketchMode=false,sketchPts=[],rotationDeg=0,gridOn=false,halfGridOn=false;
+let legs=[{l:4,a:-90},{l:.5,a:-90},{l:.5,a:180}],selected=0,sketchMode=false,sketchPts=[],rotationDeg=0,gridOn=false,halfGridOn=false,finishSide=1,snapIn=.25;
 const presets={
  gravel:{name:"Gravel Guard",legs:[{l:4,a:-90},{l:.5,a:-90},{l:.5,a:180}]},
  drip:{name:"Drip Edge",legs:[{l:3,a:-90},{l:2,a:135},{l:.5,a:135},{l:.5,a:180}]},
@@ -53,6 +72,7 @@ function gridSvg(scale,ox,oy){
 function draw(){
  const svg=$("profile"),p=points();let minX=Math.min(...p.map(q=>q.x)),maxX=Math.max(...p.map(q=>q.x)),minY=Math.min(...p.map(q=>q.y)),maxY=Math.max(...p.map(q=>q.y)),w=Math.max(maxX-minX,.5),h=Math.max(maxY-minY,.5),scale=Math.min(540/w,220/h),ox=350-(minX+maxX)*scale/2,oy=160-(minY+maxY)*scale/2;
  let out=gridSvg(scale,ox,oy);
+ out+='<text class="finishArrow" x="18" y="24">FINISH SIDE '+(finishSide>0?'▲':'▼')+'</text>';
  const labels=[];
  legs.forEach((v,i)=>{let a=p[i],b=p[i+1],x1=ox+a.x*scale,y1=oy+a.y*scale,x2=ox+b.x*scale,y2=oy+b.y*scale,mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;
    let cx=350,cy=160,toCenterX=cx-mx,toCenterY=cy-my;if(nx*toCenterX+ny*toCenterY>0){nx=-nx;ny=-ny}
@@ -60,14 +80,14 @@ function draw(){
    for(let tries=0;tries<8;tries++){let clash=labels.some(q=>Math.hypot(lx-q.x,ly-q.y)<92);if(!clash)break;lx+=nx*22;ly+=ny*22}
    lx=Math.max(34,Math.min(666,lx));ly=Math.max(24,Math.min(336,ly));labels.push({x:lx,y:ly});
    out+='<line class="seg '+(i===selected?'selected':'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" onclick="selectLeg('+i+')"/><line x1="'+(mx+nx*8)+'" y1="'+(my+ny*8)+'" x2="'+(lx-nx*10)+'" y2="'+(ly-ny*10)+'" stroke="#9aa6b2" stroke-width="1.5" pointer-events="none"/><text class="dim" x="'+lx+'" y="'+ly+'" text-anchor="middle" dominant-baseline="middle">'+fmt(v.l)+'</text><circle class="node" cx="'+x1+'" cy="'+y1+'" r="5"/>';
-   if(i<legs.length-1){let bend=Math.abs(+v.a||0),label=bend>=165?'HEM':(bend?Math.round(bend)+'°':'');if(label){let bx=x2+34,by=y2-34;if(bx>640)bx=x2-18;if(by<20)by=y2+24;out+='<text class="'+(label==='HEM'?'hemTag':'bendLabel')+'" x="'+bx+'" y="'+by+'" text-anchor="'+(bx<x2?'end':'start')+'">'+label+'</text>'}}
+   if(i<legs.length-1){let bend=Math.abs(+v.a||0),label=(v.type==='closedHem'?'CLOSED HEM':v.type==='openHem'?'OPEN HEM':(bend>=165?'HEM':(bend?Math.round(bend)+'°':'')));if(label){let bx=x2+34,by=y2-34;if(bx>640)bx=x2-18;if(by<20)by=y2+24;out+='<text class="'+(label.indexOf('HEM')>=0?'hemTag':'bendLabel')+'" x="'+bx+'" y="'+by+'" text-anchor="'+(bx<x2?'end':'start')+'">'+label+'</text>'}out+='<circle class="seqCircle" cx="'+x2+'" cy="'+y2+'" r="10"/><text class="seq" x="'+x2+'" y="'+(y2+4)+'" text-anchor="middle">'+(i+1)+'</text>'}
    if(i===legs.length-1)out+='<circle class="node" cx="'+x2+'" cy="'+y2+'" r="5"/>'});
  svg.innerHTML=out
 }
 function newSketch(){if(!confirm("Clear the current profile and start a new custom sketch?"))return;sketchMode=true;sketchPts=[];$("name").value="Custom Profile";$("legs").innerHTML="";$("finishBtn").style.display="inline-block";$("undoBtn").style.display="inline-block";$("sketchHelp").style.display="block";drawSketch()}
 let dragPoint=-1;
 function drawSketch(){let svg=$("profile"),out="";let sketchScale=50;if(gridOn||halfGridOn){out=gridSvg(sketchScale,350,180)};if(!sketchPts.length){out+='<text x="350" y="160" text-anchor="middle" fill="#667" font-size="20">Tap to place the first point</text>'}else{out+='<polyline points="'+sketchPts.map(p=>p.x+","+p.y).join(" ")+'" fill="none" stroke="#0b1f3a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';sketchPts.forEach((p,i)=>{out+='<circle class="touchNode '+(i===dragPoint?'active':'')+'" data-point="'+i+'" cx="'+p.x+'" cy="'+p.y+'" r="24"/><circle cx="'+p.x+'" cy="'+p.y+'" r="7" fill="white" stroke="#0b1f3a" stroke-width="3" pointer-events="none"/><text class="dim" pointer-events="none" x="'+(p.x+12)+'" y="'+(p.y-12)+'">'+(i+1)+"</text>"})}svg.innerHTML=out}
-function sketchXY(e){let r=$("profile").getBoundingClientRect();return{x:(e.clientX-r.left)*700/r.width,y:(e.clientY-r.top)*320/r.height}}
+function sketchXY(e){let r=$("profile").getBoundingClientRect(),p={x:(e.clientX-r.left)*700/r.width,y:(e.clientY-r.top)*360/r.height};if(snapIn>0){let s=50*snapIn;p.x=Math.round(p.x/s)*s;p.y=Math.round(p.y/s)*s}return p}
 $("profile").addEventListener("pointerdown",function(e){if(!sketchMode)return;e.preventDefault();let p=sketchXY(e),hit=-1,best=48;sketchPts.forEach((q,i)=>{let d=Math.hypot(p.x-q.x,p.y-q.y);if(d<best){best=d;hit=i}});if(hit>=0){dragPoint=hit;this.setPointerCapture(e.pointerId);drawSketch();return}if(sketchPts.length){let last=sketchPts[sketchPts.length-1];if(Math.abs(p.x-last.x)<20)p.x=last.x;if(Math.abs(p.y-last.y)<20)p.y=last.y}sketchPts.push(p);drawSketch()});
 $("profile").addEventListener("pointermove",function(e){if(!sketchMode||dragPoint<0)return;e.preventDefault();let p=sketchXY(e),prev=dragPoint>0?sketchPts[dragPoint-1]:null,next=dragPoint<sketchPts.length-1?sketchPts[dragPoint+1]:null,snap=16;if(prev){if(Math.abs(p.x-prev.x)<snap)p.x=prev.x;if(Math.abs(p.y-prev.y)<snap)p.y=prev.y}if(next){if(Math.abs(p.x-next.x)<snap)p.x=next.x;if(Math.abs(p.y-next.y)<snap)p.y=next.y}p.x=Math.max(8,Math.min(692,p.x));p.y=Math.max(8,Math.min(312,p.y));sketchPts[dragPoint]=p;drawSketch()});
 function endPointDrag(e){if(dragPoint<0)return;dragPoint=-1;try{$("profile").releasePointerCapture(e.pointerId)}catch(x){}drawSketch()}
@@ -78,9 +98,9 @@ function finishSketch(){if(sketchPts.length<2){alert("Tap at least two points to
 function selectLeg(i){selected=i;draw();showEditor(i)}
 function showEditor(i){
  let v=legs[i],p=$("editPanel");p.style.display="block";
- p.innerHTML='<b>Selected leg '+(i+1)+'</b><div class="grid" style="margin-top:8px"><div><label>Length (in)</label><input id="quickLen" inputmode="decimal" type="number" min=".0625" step=".0625" value="'+v.l+'"></div><div><label>Turn after leg (°)</label><input id="quickAng" inputmode="decimal" type="number" step="1" value="'+v.a+'"></div></div>';
+ p.innerHTML='<b>Selected leg '+(i+1)+'</b><div class="grid" style="margin-top:8px"><div><label>Length (in)</label><input id="quickLen" inputmode="decimal" type="number" min=".0625" step=".0625" value="'+v.l+'"></div><div><label>Turn after leg (°)</label><input id="quickAng" inputmode="decimal" type="number" step="1" value="'+v.a+'"></div><div><label>Bend type</label><select id="quickType"><option value="bend">Standard bend</option><option value="openHem">Open hem</option><option value="closedHem">Closed hem</option></select></div></div>'; $("quickType").value=v.type||"bend";
  $("quickLen").oninput=()=>{v.l=Math.max(.0625,+$("quickLen").value||.0625);syncLegInputs(i);calc();draw()};
- $("quickAng").oninput=()=>{v.a=+$("quickAng").value||0;syncLegInputs(i);draw()};
+ $("quickAng").oninput=()=>{v.a=+$("quickAng").value||0;syncLegInputs(i);calc();draw()}; $("quickType").onchange=()=>{v.type=$("quickType").value;if(v.type==="openHem"||v.type==="closedHem")v.a=180;syncLegInputs(i);calc();draw()};
  p.scrollIntoView({behavior:"smooth",block:"nearest"})
 }
 function syncLegInputs(i){let row=document.querySelector('[data-leg="'+i+'"]');if(!row)return;let z=row.querySelectorAll("input");z[0].value=legs[i].l;z[1].value=legs[i].a}
@@ -94,16 +114,39 @@ function removeLeg(i){if(legs.length<=1)return;legs.splice(i,1);selected=Math.mi
 window.rotateProfile=function(deg){rotationDeg=((rotationDeg+deg)%360+360)%360;draw()};
 window.resetRotation=function(){rotationDeg=0;draw()};
 function reverseProfile(){let dirs=[],ang=0;legs.forEach(v=>{dirs.push(ang);ang+=v.a});let nl=[];for(let i=legs.length-1;i>=0;i--){let a=i>0?-legs[i-1].a:180-(dirs[legs.length-1]+180);nl.push({l:legs[i].l,a:a})}legs=nl;selected=0;render()}
+
+function flipFinish(){finishSide*=-1;draw()}
+function calcFlatBlank(){
+ let t=+$("thickness").value||0,r=+$("insideRadius").value||0,k=+$("kFactor").value||.4,adj=+$("bdAdjust").value||0;
+ let outside=legs.reduce((s,v)=>s+(+v.l||0),0),ded=0;
+ for(let i=0;i<legs.length-1;i++){let a=Math.min(180,Math.abs(+legs[i].a||0));if(!a)continue;let theta=a*Math.PI/180,ba=theta*(r+k*t),setback=(r+t)*Math.tan(Math.min(theta/2,Math.PI/2-.001)),bd=2*setback-ba+adj;if(legs[i].type==="closedHem")bd=Math.max(0,2*t+adj);else if(legs[i].type==="openHem")bd=Math.max(0,t+adj);ded+=bd}
+ return Math.max(0,outside-ded)
+}
+function saveToLibrary(){
+ let lib=[];try{lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]")}catch(e){}
+ let item={id:Date.now(),name:$("name").value||"Custom Profile",legs:legs.map(v=>({...v})),material:$("material").value,thickness:$("thickness").value,color:$("colorFinish").value,pieceLen:$("profilePieceLen").value,qty:$("profileQty").value,radius:$("insideRadius").value,k:$("kFactor").value,finishSide};
+ lib.unshift(item);localStorage.setItem("proedgeLibrary",JSON.stringify(lib.slice(0,50)));renderLibrary();alert("Profile saved to the ProEdge library.")
+}
+function loadLibrary(id){let lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]"),x=lib.find(v=>v.id===id);if(!x)return;$("name").value=x.name;legs=x.legs.map(v=>({...v}));$("material").value=x.material||"Galvanized Steel";$("thickness").value=x.thickness||".024";$("colorFinish").value=x.color||"";$("profilePieceLen").value=x.pieceLen||10;$("profileQty").value=x.qty||1;$("insideRadius").value=x.radius||".031";$("kFactor").value=x.k||".40";finishSide=x.finishSide||1;selected=0;render()}
+function deleteLibrary(id){let lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]").filter(v=>v.id!==id);localStorage.setItem("proedgeLibrary",JSON.stringify(lib));renderLibrary()}
+function renderLibrary(){let p=$("profileLibrary"),lib=[];try{lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]")}catch(e){};if(!lib.length){p.innerHTML="No saved shop profiles yet.";return}p.innerHTML=lib.map(x=>'<div class="libraryItem"><span><b>'+x.name.replace(/[<>&]/g,"")+'</b><br><span class="badge">'+(x.material||"")+'</span></span><span><button onclick="loadLibrary('+x.id+')">Load</button><button class="danger" onclick="deleteLibrary('+x.id+')">×</button></span></div>').join("")}
+function printWorkOrder(){
+ let flat=calcFlatBlank(),qty=+$("profileQty").value||1,plen=+$("profilePieceLen").value||0,total=qty*plen;
+ let svg=$("profile").outerHTML,w=window.open("","_blank");if(!w){alert("Allow pop-ups to create the production sheet.");return}
+ w.document.write('<html><head><title>ProEdge Production Sheet</title><style>body{font-family:Arial;padding:28px;color:#17202a}h1{color:#0b1f3a}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 30px}svg{width:100%;height:360px;border:1px solid #ccc}.warn{margin-top:18px;padding:10px;background:#fff5d6}</style></head><body><h1>PROEDGE METALS — PRODUCTION SHEET</h1><h2>'+$("name").value.replace(/[<>&]/g,"")+'</h2><div class="meta"><b>Material: '+$("material").value+'</b><b>Thickness: '+$("thickness").value+' in</b><b>Color/Finish: '+$("colorFinish").value.replace(/[<>&]/g,"")+'</b><b>Quantity: '+qty+'</b><b>Piece length: '+plen+' ft</b><b>Total: '+total.toFixed(1)+' LF</b><b>Calculated blank: '+flat.toFixed(3)+' in</b><b>Inside radius: '+$("insideRadius").value+' in</b></div>'+svg+'<div class="warn">VERIFY FIRST ARTICLE / TEST BEND BEFORE PRODUCTION. Calculated blank depends on entered brake/material calibration.</div><script>window.onload=()=>window.print()<\/script></body></html>');w.document.close()
+}
 function saveP(){localStorage.setItem("proedgeV2",JSON.stringify({name:$("name").value,legs}));alert("Profile saved on this iPhone.")}
 function money(v){return "$"+(isFinite(v)?v:0).toFixed(2)}
 function calc(){
- let flat=legs.reduce((s,v)=>s+(+v.l||0),0);$("flat").textContent=flat.toFixed(3)+'″';$("bendCount").textContent=Math.max(0,legs.length-1)+" bends";$("pieceCount").textContent=legs.length+" legs";
+ let flat=legs.reduce((s,v)=>s+(+v.l||0),0);$("flat").textContent=flat.toFixed(3)+'″';if($("trueFlat"))$("trueFlat").textContent=calcFlatBlank().toFixed(3)+'″';if($("prodFeet"))$("prodFeet").textContent=((+$("profileQty").value||0)*(+$("profilePieceLen").value||0)).toFixed(1)+" LF";$("bendCount").textContent=Math.max(0,legs.length-1)+" bends";$("pieceCount").textContent=legs.length+" legs";
  let feet=+$("feet").value||0,piece=+$("piece").value||10,width=+$("width").value||48,p=Math.ceil(feet/piece),str=flat?Math.floor(width/flat):0,base=str?Math.ceil(p/str):0,sh=base?Math.ceil(base*(1+(+$("waste").value||0)/100)):0,mc=sh*(+$("sheetCost").value||0),lc=(+$("hours").value||0)*(+$("rate").value||0)+(+$("other").value||0),m=(+$("margin").value||0)/100,pre=m<1?(mc+lc)/(1-m):0,ta=pre*(+$("tax").value||0)/100;
  $("pieces").textContent=p;$("strips").textContent=str||"—";$("sheets").textContent=sh;$("mc").textContent=money(mc);$("lc").textContent=money(lc);$("pre").textContent=money(pre);$("ta").textContent=money(ta);$("tot").textContent=money(pre+ta)
 }
 $("gridToggle").addEventListener("change",e=>{gridOn=e.target.checked;if(sketchMode)drawSketch();else draw()});
 $("halfGridToggle").addEventListener("change",e=>{halfGridOn=e.target.checked;if(sketchMode)drawSketch();else draw()});
+$("snapSelect").onchange=e=>{snapIn=+e.target.value||0};
+["thickness","insideRadius","kFactor","bdAdjust","profileQty","profilePieceLen"].forEach(i=>$(i).oninput=()=>{calc();draw()});
 ["feet","piece","width","sheetCost","waste","hours","rate","margin","tax","other"].forEach(i=>$(i).oninput=calc);
 try{let s=JSON.parse(localStorage.getItem("proedgeV2"));if(s&&s.legs){$("name").value=s.name||"Custom Profile";legs=s.legs}}catch(e){}
-render();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
+render();renderLibrary();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
 </script></body></html>
