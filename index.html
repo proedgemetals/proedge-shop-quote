@@ -7,7 +7,7 @@
 
 #productionSheet{display:none;position:fixed;inset:0;z-index:20;background:#fff;overflow:auto;padding:16px;overscroll-behavior:contain}#productionSheet.open{display:block}.sheetToolbar{position:sticky;top:0;display:flex;gap:10px;background:#fff;padding:8px 0 12px;border-bottom:1px solid #ccd4dd;z-index:1}.sheetPage{max-width:760px;margin:12px auto;color:#17202a}.sheetPage h1{color:#0b1f3a}.sheetMeta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}.sheetMeta div{overflow-wrap:anywhere}.sheetDrawing{border:1px solid #ccd4dd;margin:16px 0;min-height:360px}.sheetDrawing svg{display:block;width:100%;height:420px}.sheetSteps{line-height:1.5}@media print{header,main,.sheetToolbar{display:none!important}body{background:#fff}#productionSheet,#productionSheet.open{display:block!important;position:static;overflow:visible;padding:0}.sheetPage{max-width:none;margin:0}.sheetDrawing svg{height:420px}.sheetPage .warn{print-color-adjust:exact}}
 </style></head>
-<body><header><b>PROEDGE METALS</b><br><small>Profile Designer + Shop Quote v8.3.1</small></header><main>
+<body><header><b>PROEDGE METALS</b><br><small>Profile Designer + Shop Quote v8.4</small></header><main>
 <div class="card"><h2>Profile Designer</h2>
 <label>Profile name</label><input id="name" value="Gravel Guard">
 <div class="presetRow"><button onclick="preset('gravel')">Gravel Guard</button><button onclick="preset('drip')">Drip Edge</button><button onclick="preset('coping')">Coping</button><button onclick="preset('counter')">Counterflashing</button><button onclick="preset('gutter')">Box Gutter</button></div>
@@ -23,10 +23,10 @@
 <label style="display:flex;align-items:center;gap:8px;font-size:14px"><input id="gridToggle" type="checkbox" style="width:auto;margin:0"> 1" grid</label>
 <label style="display:flex;align-items:center;gap:8px;font-size:14px"><input id="halfGridToggle" type="checkbox" style="width:auto;margin:0"> 1/2" lines</label>
 <div><label>Snap</label><select id="snapSelect" style="width:auto;margin:3px 0"><option value="0">Off</option><option value="1">1"</option><option value=".5">1/2"</option><option value=".25" selected>1/4"</option><option value=".125">1/8"</option><option value=".0625">1/16"</option></select></div>
-<button class="secondary" onclick="flipFinish()">Flip Finish Side</button>
+<button class="secondary" onclick="flipFinish()">Flip Finish Side</button><div style="width:130px"><label for="finishAngle">Arrow angle (°)</label><input id="finishAngle" inputmode="numeric" type="number" min="0" max="359" step="1" value="0" style="margin:3px 0"></div><button class="secondary" onclick="turnFinishArrow(-15)">↺ Arrow</button><button class="secondary" onclick="turnFinishArrow(15)">↻ Arrow</button>
 </div><p id="sketchHelp" class="note" style="display:none"><b>Sketch mode:</b> tap to add points. Tap to add each corner. Press and drag any point to reshape it. For a hem, draw the return back alongside the previous leg—even very close to it. The larger invisible touch targets make tight hems easier to shape. Exact size comes from the dimension you enter after finishing. Tap Finish Sketch when done.</p>
 <div class="toolbar"><button onclick="newSketch()">New / Clear Profile</button><button id="finishBtn" style="display:none" onclick="finishSketch()">Finish Sketch</button><button id="undoBtn" class="secondary" style="display:none" onclick="undoSketch()">Undo Point</button><button onclick="addLeg()">+ Add Leg</button><button class="secondary" onclick="window.rotateProfile(-15)">↺ 15°</button><button class="secondary" onclick="window.rotateProfile(15)">↻ 15°</button><button class="secondary" onclick="window.resetRotation()">Reset Rotation</button><button class="secondary" onclick="reverseProfile()">Reverse</button><button class="secondary" onclick="saveP()">Save on iPhone</button></div><div class="prodbar"><button onclick="saveToLibrary()">Save to Profile Library</button><button onclick="printWorkOrder()">Production Sheet</button></div>
-<p class="note"><b>Shop-sketch workflow:</b> sketch the shape first, then enter exact leg dimensions. Choose Open hem or Closed hem under the leg before the return. The choice is saved with the profile and printed on the Production Sheet. Open hems show a visible schematic gap; actual gap size must be specified for production.</p>
+<p class="note"><b>Shop-sketch workflow:</b> sketch the shape first, then enter exact leg dimensions. Choose Open hem or Closed hem under the leg before the return. The choice is saved with the profile and printed on the Production Sheet. Open hems show a visible schematic gap; actual gap size must be specified for production. Drag the Finish Side marker to position it, and set any arrow angle above.</p>
 <div id="editPanel" class="warn" style="display:none"></div><div id="legs"></div>
 <div class="metric"><span>Nominal developed width</span><b id="flat"></b></div>
 <div><span class="pill" id="pieceCount"></span><span class="pill" id="bendCount"></span></div>
@@ -50,7 +50,7 @@
 <section id="productionSheet" aria-label="Production Sheet"><div class="sheetToolbar"><button class="secondary" onclick="closeProductionSheet()">← Back to Designer</button><button onclick="window.print()">Print / Save PDF</button></div><div class="sheetPage" id="sheetPage"></div></section>
 <script>
 const $=id=>document.getElementById(id);
-let legs=[{l:4,a:-90},{l:.5,a:-90},{l:.5,a:180}],selected=0,sketchMode=false,sketchPts=[],rotationDeg=0,gridOn=false,halfGridOn=false,finishSide=1,snapIn=.25;
+let legs=[{l:4,a:-90},{l:.5,a:-90},{l:.5,a:180}],selected=0,sketchMode=false,sketchPts=[],rotationDeg=0,gridOn=false,halfGridOn=false,finishSide=1,snapIn=.25,finishMarker={x:18,y:28,angle:0},markerDrag=false,markerOffset={x:0,y:0};
 const presets={
  gravel:{name:"Gravel Guard",legs:[{l:4,a:-90},{l:.5,a:-90},{l:.5,a:180}]},
  drip:{name:"Drip Edge",legs:[{l:3,a:-90},{l:2,a:135},{l:.5,a:135},{l:.5,a:180}]},
@@ -67,6 +67,7 @@ function points(){
 function fmt(n){let whole=Math.floor(n+1e-8),frac=n-whole,den=16,num=Math.round(frac*den);if(num===den){whole++;num=0}if(!num)return whole+'″';let g=(a,b)=>b?g(b,a%b):a,d=g(num,den);num/=d;den/=d;return (whole?whole+' ':'')+num+'/'+den+'″'}
 function canvasH(){let r=$("profile").getBoundingClientRect();return Math.max(360,Math.round(700*r.height/Math.max(1,r.width)))}
 function setCanvas(){let h=canvasH();$("profile").setAttribute('viewBox','0 0 700 '+h);return h}
+function finishMarkerSvg(){let m=finishMarker;return '<g id="finishMarker" transform="translate('+m.x+' '+m.y+')" style="cursor:grab;touch-action:none"><rect x="-7" y="-21" width="157" height="38" rx="8" fill="#eaf4f0" stroke="#2f9b57" stroke-width="1.5"/><text x="3" y="4" font-size="13" font-weight="900" fill="#17663a" pointer-events="none">FINISH SIDE</text><g transform="rotate('+m.angle+' 124 -2)" pointer-events="none"><path d="M124 -14 L114 7 L124 3 L134 7 Z" fill="#17663a"/></g></g>'}
 function gridSvg(scale,ox,oy){let H=canvasH();
  if(!gridOn&&!halfGridOn)return '';
  let major=Math.max(12,scale),minor=major/2,out='<g class="inchGrid" pointer-events="none">';
@@ -77,7 +78,7 @@ function gridSvg(scale,ox,oy){let H=canvasH();
 function draw(){
  const svg=$("profile"),H=setCanvas(),p=points();let minX=Math.min(...p.map(q=>q.x)),maxX=Math.max(...p.map(q=>q.x)),minY=Math.min(...p.map(q=>q.y)),maxY=Math.max(...p.map(q=>q.y)),w=Math.max(maxX-minX,.5),h=Math.max(maxY-minY,.5),scale=Math.min(540/w,(H-110)/h),ox=350-(minX+maxX)*scale/2,oy=H/2-(minY+maxY)*scale/2;
  let out=gridSvg(scale,ox,oy);
- out+='<text class="finishArrow" x="18" y="24">FINISH SIDE '+(finishSide>0?'▲':'▼')+'</text>';
+ 
  const labels=[];let shiftX=0,shiftY=0;
  legs.forEach((v,i)=>{let a=p[i],b=p[i+1],x1=ox+a.x*scale+shiftX,y1=oy+a.y*scale+shiftY,x2=ox+b.x*scale+shiftX,y2=oy+b.y*scale+shiftY,mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;
    let cx=350,cy=H/2,toCenterX=cx-mx,toCenterY=cy-my;if(nx*toCenterX+ny*toCenterY>0){nx=-nx;ny=-ny}
@@ -89,15 +90,16 @@ function draw(){
    if(i===legs.length-1)out+='<circle class="node" cx="'+x2+'" cy="'+y2+'" r="5"/>';
    if(v.type==='openHem'&&i<legs.length-1){let hx=-dy/len*12,hy=dx/len*12,tx=dx/len*8,ty=dy/len*8;out+='<path d="M '+x2+' '+y2+' C '+(x2+tx)+' '+(y2+ty)+' '+(x2+tx+hx)+' '+(y2+ty+hy)+' '+(x2+hx)+' '+(y2+hy)+'" fill="none" stroke="#18242f" stroke-width="4" stroke-linecap="round"/>';shiftX+=hx;shiftY+=hy}
  });
- svg.innerHTML=out
+ svg.innerHTML=out+finishMarkerSvg()
 }
 function newSketch(){if(!confirm("Clear the current profile and start a new custom sketch?"))return;sketchMode=true;sketchPts=[];$("name").value="Custom Profile";$("legs").innerHTML="";$("finishBtn").style.display="inline-block";$("undoBtn").style.display="inline-block";$("sketchHelp").style.display="block";drawSketch()}
 let dragPoint=-1;
-function drawSketch(){let svg=$("profile"),H=setCanvas(),out="";let sketchScale=50;if(gridOn||halfGridOn){out=gridSvg(sketchScale,350,H/2)};if(!sketchPts.length){out+='<text x="350" y="'+H/2+'" text-anchor="middle" fill="#667" font-size="20">Tap to place the first point</text>'}else{out+='<polyline points="'+sketchPts.map(p=>p.x+","+p.y).join(" ")+'" fill="none" stroke="#0b1f3a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';sketchPts.forEach((p,i)=>{out+='<circle class="touchNode '+(i===dragPoint?'active':'')+'" data-point="'+i+'" cx="'+p.x+'" cy="'+p.y+'" r="24"/><circle cx="'+p.x+'" cy="'+p.y+'" r="7" fill="white" stroke="#0b1f3a" stroke-width="3" pointer-events="none"/><text class="dim" pointer-events="none" x="'+(p.x+12)+'" y="'+(p.y-12)+'">'+(i+1)+"</text>"})}svg.innerHTML=out}
-function sketchXY(e){let svg=$("profile"),matrix=svg.getScreenCTM(),pt=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse()),p={x:pt.x,y:pt.y};if(snapIn>0){let s=50*snapIn;p.x=Math.round(p.x/s)*s;p.y=Math.round(p.y/s)*s}return p}
-$("profile").addEventListener("pointerdown",function(e){if(!sketchMode)return;e.preventDefault();let p=sketchXY(e),hit=-1,best=48;sketchPts.forEach((q,i)=>{let d=Math.hypot(p.x-q.x,p.y-q.y);if(d<best){best=d;hit=i}});if(hit>=0){dragPoint=hit;this.setPointerCapture(e.pointerId);drawSketch();return}if(sketchPts.length){let last=sketchPts[sketchPts.length-1];if(Math.abs(p.x-last.x)<20)p.x=last.x;if(Math.abs(p.y-last.y)<20)p.y=last.y}sketchPts.push(p);drawSketch()});
-$("profile").addEventListener("pointermove",function(e){if(!sketchMode||dragPoint<0)return;e.preventDefault();let p=sketchXY(e),prev=dragPoint>0?sketchPts[dragPoint-1]:null,next=dragPoint<sketchPts.length-1?sketchPts[dragPoint+1]:null,snap=16;if(prev){if(Math.abs(p.x-prev.x)<snap)p.x=prev.x;if(Math.abs(p.y-prev.y)<snap)p.y=prev.y}if(next){if(Math.abs(p.x-next.x)<snap)p.x=next.x;if(Math.abs(p.y-next.y)<snap)p.y=next.y}p.x=Math.max(8,Math.min(692,p.x));p.y=Math.max(8,Math.min(canvasH()-8,p.y));sketchPts[dragPoint]=p;drawSketch()});
-function endPointDrag(e){if(dragPoint<0)return;dragPoint=-1;try{$("profile").releasePointerCapture(e.pointerId)}catch(x){}drawSketch()}
+function drawSketch(){let svg=$("profile"),H=setCanvas(),out="";let sketchScale=50;if(gridOn||halfGridOn){out=gridSvg(sketchScale,350,H/2)};if(!sketchPts.length){out+='<text x="350" y="'+H/2+'" text-anchor="middle" fill="#667" font-size="20">Tap to place the first point</text>'}else{out+='<polyline points="'+sketchPts.map(p=>p.x+","+p.y).join(" ")+'" fill="none" stroke="#0b1f3a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';sketchPts.forEach((p,i)=>{out+='<circle class="touchNode '+(i===dragPoint?'active':'')+'" data-point="'+i+'" cx="'+p.x+'" cy="'+p.y+'" r="24"/><circle cx="'+p.x+'" cy="'+p.y+'" r="7" fill="white" stroke="#0b1f3a" stroke-width="3" pointer-events="none"/><text class="dim" pointer-events="none" x="'+(p.x+12)+'" y="'+(p.y-12)+'">'+(i+1)+"</text>"})}svg.innerHTML=out+finishMarkerSvg()}
+function canvasXY(e){let svg=$("profile"),matrix=svg.getScreenCTM(),pt=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse());return {x:pt.x,y:pt.y}}
+function sketchXY(e){let p=canvasXY(e);if(snapIn>0){let s=50*snapIn;p.x=Math.round(p.x/s)*s;p.y=Math.round(p.y/s)*s}return p}
+$("profile").addEventListener("pointerdown",function(e){if(e.target.closest("#finishMarker")){e.preventDefault();let p=canvasXY(e);markerDrag=true;markerOffset={x:p.x-finishMarker.x,y:p.y-finishMarker.y};this.setPointerCapture(e.pointerId);return}if(!sketchMode)return;e.preventDefault();let p=sketchXY(e),hit=-1,best=48;sketchPts.forEach((q,i)=>{let d=Math.hypot(p.x-q.x,p.y-q.y);if(d<best){best=d;hit=i}});if(hit>=0){dragPoint=hit;this.setPointerCapture(e.pointerId);drawSketch();return}if(sketchPts.length){let last=sketchPts[sketchPts.length-1];if(Math.abs(p.x-last.x)<20)p.x=last.x;if(Math.abs(p.y-last.y)<20)p.y=last.y}sketchPts.push(p);drawSketch()});
+$("profile").addEventListener("pointermove",function(e){if(markerDrag){e.preventDefault();let p=canvasXY(e);finishMarker.x=Math.max(8,Math.min(550,p.x-markerOffset.x));finishMarker.y=Math.max(24,Math.min(canvasH()-20,p.y-markerOffset.y));if(sketchMode)drawSketch();else draw();return}if(!sketchMode||dragPoint<0)return;e.preventDefault();let p=sketchXY(e),prev=dragPoint>0?sketchPts[dragPoint-1]:null,next=dragPoint<sketchPts.length-1?sketchPts[dragPoint+1]:null,snap=16;if(prev){if(Math.abs(p.x-prev.x)<snap)p.x=prev.x;if(Math.abs(p.y-prev.y)<snap)p.y=prev.y}if(next){if(Math.abs(p.x-next.x)<snap)p.x=next.x;if(Math.abs(p.y-next.y)<snap)p.y=next.y}p.x=Math.max(8,Math.min(692,p.x));p.y=Math.max(8,Math.min(canvasH()-8,p.y));sketchPts[dragPoint]=p;drawSketch()});
+function endPointDrag(e){if(markerDrag){markerDrag=false;try{$("profile").releasePointerCapture(e.pointerId)}catch(x){}return}if(dragPoint<0)return;dragPoint=-1;try{$("profile").releasePointerCapture(e.pointerId)}catch(x){}drawSketch()}
 $("profile").addEventListener("pointerup",endPointDrag);
 $("profile").addEventListener("pointercancel",endPointDrag);
 function undoSketch(){if(sketchPts.length)sketchPts.pop();drawSketch()}
@@ -123,7 +125,9 @@ window.rotateProfile=function(deg){rotationDeg=((rotationDeg+deg)%360+360)%360;d
 window.resetRotation=function(){rotationDeg=0;draw()};
 function reverseProfile(){let dirs=[],ang=0;legs.forEach(v=>{dirs.push(ang);ang+=v.a});let nl=[];for(let i=legs.length-1;i>=0;i--){let a=i>0?-legs[i-1].a:180-(dirs[legs.length-1]+180);nl.push({l:legs[i].l,a:a,type:i>0?(legs[i-1].type||'bend'):'bend'})}legs=nl;selected=0;render()}
 
-function flipFinish(){finishSide*=-1;draw()}
+function setFinishAngle(a){finishMarker.angle=((Math.round(+a||0)%360)+360)%360;$("finishAngle").value=finishMarker.angle;if(sketchMode)drawSketch();else draw()}
+function turnFinishArrow(deg){setFinishAngle(finishMarker.angle+deg)}
+function flipFinish(){finishSide*=-1;setFinishAngle(finishMarker.angle+180)}
 function calcFlatBlank(){
  let t=+$("thickness").value||0,r=+$("insideRadius").value||0,k=+$("kFactor").value||.4,adj=+$("bdAdjust").value||0;
  let outside=legs.reduce((s,v)=>s+(+v.l||0),0),ded=0;
@@ -132,10 +136,10 @@ function calcFlatBlank(){
 }
 function saveToLibrary(){
  let lib=[];try{lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]")}catch(e){}
- let item={id:Date.now(),name:$("name").value||"Custom Profile",legs:legs.map(v=>({...v})),material:$("material").value,thickness:$("thickness").value,color:$("colorFinish").value,pieceLen:$("profilePieceLen").value,qty:$("profileQty").value,radius:$("insideRadius").value,k:$("kFactor").value,finishSide};
+ let item={id:Date.now(),name:$("name").value||"Custom Profile",legs:legs.map(v=>({...v})),material:$("material").value,thickness:$("thickness").value,color:$("colorFinish").value,pieceLen:$("profilePieceLen").value,qty:$("profileQty").value,radius:$("insideRadius").value,k:$("kFactor").value,finishSide,finishMarker:{...finishMarker}};
  lib.unshift(item);localStorage.setItem("proedgeLibrary",JSON.stringify(lib.slice(0,50)));renderLibrary();alert("Profile saved to the ProEdge library.")
 }
-function loadLibrary(id){let lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]"),x=lib.find(v=>v.id===id);if(!x)return;$("name").value=x.name;legs=x.legs.map(v=>({...v}));$("material").value=x.material||"Galvanized Steel";$("thickness").value=x.thickness||".024";$("colorFinish").value=x.color||"";$("profilePieceLen").value=x.pieceLen||10;$("profileQty").value=x.qty||1;$("insideRadius").value=x.radius||".031";$("kFactor").value=x.k||".40";finishSide=x.finishSide||1;selected=0;render()}
+function loadLibrary(id){let lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]"),x=lib.find(v=>v.id===id);if(!x)return;$("name").value=x.name;legs=x.legs.map(v=>({...v}));$("material").value=x.material||"Galvanized Steel";$("thickness").value=x.thickness||".024";$("colorFinish").value=x.color||"";$("profilePieceLen").value=x.pieceLen||10;$("profileQty").value=x.qty||1;$("insideRadius").value=x.radius||".031";$("kFactor").value=x.k||".40";finishSide=x.finishSide||1;finishMarker=x.finishMarker?{...x.finishMarker}:{x:18,y:28,angle:finishSide<0?180:0};$("finishAngle").value=finishMarker.angle;selected=0;render()}
 function deleteLibrary(id){let lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]").filter(v=>v.id!==id);localStorage.setItem("proedgeLibrary",JSON.stringify(lib));renderLibrary()}
 function renderLibrary(){let p=$("profileLibrary"),lib=[];try{lib=JSON.parse(localStorage.getItem("proedgeLibrary")||"[]")}catch(e){};if(!lib.length){p.innerHTML="No saved shop profiles yet.";return}p.innerHTML=lib.map(x=>'<div class="libraryItem"><span><b>'+x.name.replace(/[<>&]/g,"")+'</b><br><span class="badge">'+(x.material||"")+'</span></span><span><button onclick="loadLibrary('+x.id+')">Load</button><button class="danger" onclick="deleteLibrary('+x.id+')">×</button></span></div>').join("")}
 function escapeMarkup(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -149,7 +153,7 @@ function printWorkOrder(){
  $("productionSheet").classList.add("open");document.body.style.overflow="hidden";$("productionSheet").scrollTop=0
 }
 function closeProductionSheet(){$("productionSheet").classList.remove("open");document.body.style.overflow=""}
-function saveP(){localStorage.setItem("proedgeV2",JSON.stringify({name:$("name").value,legs}));alert("Profile saved on this iPhone.")}
+function saveP(){localStorage.setItem("proedgeV2",JSON.stringify({name:$("name").value,legs,finishSide,finishMarker}));alert("Profile saved on this iPhone.")}
 function money(v){return "$"+(isFinite(v)?v:0).toFixed(2)}
 function calc(){
  let flat=legs.reduce((s,v)=>s+(+v.l||0),0);$("flat").textContent=flat.toFixed(3)+'″';if($("trueFlat"))$("trueFlat").textContent=calcFlatBlank().toFixed(3)+'″';if($("prodFeet"))$("prodFeet").textContent=((+$("profileQty").value||0)*(+$("profilePieceLen").value||0)).toFixed(1)+" LF";$("bendCount").textContent=Math.max(0,legs.length-1)+" bends";$("pieceCount").textContent=legs.length+" legs";
@@ -159,8 +163,9 @@ function calc(){
 $("gridToggle").addEventListener("change",e=>{gridOn=e.target.checked;if(sketchMode)drawSketch();else draw()});
 $("halfGridToggle").addEventListener("change",e=>{halfGridOn=e.target.checked;if(sketchMode)drawSketch();else draw()});
 $("snapSelect").onchange=e=>{snapIn=+e.target.value||0};
+$("finishAngle").oninput=e=>setFinishAngle(e.target.value);
 ["thickness","insideRadius","kFactor","bdAdjust","profileQty","profilePieceLen"].forEach(i=>$(i).oninput=()=>{calc();draw()});
 ["feet","piece","width","sheetCost","waste","hours","rate","margin","tax","other"].forEach(i=>$(i).oninput=calc);
-try{let s=JSON.parse(localStorage.getItem("proedgeV2"));if(s&&s.legs){$("name").value=s.name||"Custom Profile";legs=s.legs}}catch(e){}
+try{let s=JSON.parse(localStorage.getItem("proedgeV2"));if(s&&s.legs){$("name").value=s.name||"Custom Profile";legs=s.legs;finishSide=s.finishSide||1;finishMarker=s.finishMarker?{...s.finishMarker}:{x:18,y:28,angle:finishSide<0?180:0};$("finishAngle").value=finishMarker.angle}}catch(e){}
 window.addEventListener("resize",()=>{if(sketchMode)drawSketch();else draw()});render();renderLibrary();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
 </script></body></html>
